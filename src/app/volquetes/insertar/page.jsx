@@ -1,8 +1,12 @@
 "use client";
 
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 const Listar = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     codigo: "",
     placa_vehiculo: "",
@@ -21,9 +25,37 @@ const Listar = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Objeto final del formulario:", formData);
+
+    try {
+      const response = await axios.post(
+        `http://localhost:3001/volquetes/insert`,
+        formData
+      );
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "¡Éxito!",
+          text: "Vehiculo insertado con éxito.",
+        }).then(() => {
+          router.push("/volquetes"); // Redirige al listado
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Hubo un problema al insertar el cliente.",
+        });
+      }
+    } catch (error) {
+      console.error("Error al insertar el cliente:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Ocurrió un error al insertar el registro. Por favor, inténtalo nuevamente.",
+      });
+    }
   };
 
   return (
@@ -39,7 +71,7 @@ const Listar = () => {
         >
           <div className="mb-5">
             <label className="block mb-2 font-medium text-gray-900 dark:text-white">
-              Código (VOL001)
+              Nuevo código (VOL001)
             </label>
             <input
               type="text"
@@ -52,7 +84,7 @@ const Listar = () => {
           </div>
           <div className="mb-5">
             <label className="block mb-2 font-medium text-gray-900 dark:text-white">
-              Placa del vehículo (GHI709)
+              Placa del vehículo asociado (GHI709)
             </label>
             <input
               type="text"

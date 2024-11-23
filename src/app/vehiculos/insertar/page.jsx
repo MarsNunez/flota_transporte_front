@@ -1,12 +1,17 @@
 "use client";
 
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 const Listar = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     placa: "",
     marca: "",
     modelo: "",
+    dni: "",
     certificado_habilitacion_vehicular_especial: "",
     soat: "",
     tarjeta_unica_circulacion: "",
@@ -21,9 +26,37 @@ const Listar = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Objeto final del formulario:", formData);
+
+    try {
+      const response = await axios.post(
+        `http://localhost:3001/vehiculos/insert`,
+        formData
+      );
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "¡Éxito!",
+          text: "Vehiculo insertado con éxito.",
+        }).then(() => {
+          router.push("/vehiculos"); // Redirige al listado
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Hubo un problema al insertar el cliente.",
+        });
+      }
+    } catch (error) {
+      console.error("Error al insertar el cliente:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Ocurrió un error al insertar el registro. Por favor, inténtalo nuevamente.",
+      });
+    }
   };
 
   return (
@@ -39,7 +72,20 @@ const Listar = () => {
         >
           <div className="mb-5">
             <label className="block mb-2 font-medium text-gray-900 dark:text-white">
-              Placa (GHI7199)
+              DNI (55667788)
+            </label>
+            <input
+              type="text"
+              id="dni"
+              value={formData.dni}
+              onChange={handleChange}
+              className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label className="block mb-2 font-medium text-gray-900 dark:text-white">
+              Nueva placa (GHI7199)
             </label>
             <input
               type="text"
@@ -78,7 +124,7 @@ const Listar = () => {
           </div>
           <div className="mb-5">
             <label className="block mb-2 font-medium text-gray-900 dark:text-white">
-              Certificado Vehicular Especial (HVE5432167919)
+              Certificado Vehicular Especial (HVE0987654321)
             </label>
             <input
               type="text"
@@ -91,7 +137,7 @@ const Listar = () => {
           </div>
           <div className="mb-5">
             <label className="block mb-2 font-medium text-gray-900 dark:text-white">
-              SOAT (320298765991)
+              SOAT (888987654888)
             </label>
             <input
               type="text"
@@ -104,7 +150,7 @@ const Listar = () => {
           </div>
           <div className="mb-5">
             <label className="block mb-2 font-medium text-gray-900 dark:text-white">
-              Tarjeta Única de Circulación (TUC33345678)
+              Tarjeta Única de Circulación (TUC87654321)
             </label>
             <input
               type="text"
@@ -117,7 +163,7 @@ const Listar = () => {
           </div>
           <div className="mb-5">
             <label className="block mb-2 font-medium text-gray-900 dark:text-white">
-              Tarjeta Vehicular Electrónica (TIVE3224)
+              Tarjeta Vehicular Electrónica (TIVE5678)
             </label>
             <input
               type="text"
